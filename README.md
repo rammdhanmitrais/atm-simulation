@@ -1,4 +1,4 @@
-# atm-simulation feature
+# atm-simulation
 A program which simulate the functionalities of ATM
 - This program contains two records with the following details:
   --
