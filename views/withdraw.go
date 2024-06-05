@@ -48,7 +48,13 @@ func (pl *withdraw) StartDisplay(cmd *schemas.Command) (err error) {
 		cmd.Command = utils.TransactionCommand
 		return
 	} else if input == otherIdx {
-		value = int64(otherScreen())
+		val, errors := otherScreen()
+		if errors != nil {
+			err = errors
+			return
+		}
+
+		value = int64(val)
 	} else {
 		value = utils.WithdrawValues[input-1]
 	}
@@ -59,7 +65,7 @@ func (pl *withdraw) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func otherScreen() (response int){
+func otherScreen() (response int, err error){
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -68,8 +74,26 @@ func otherScreen() (response int){
 	fmt.Print("Enter amount to withdraw: ")
 
 	input, _ := reader.ReadString('\n')
+	input = strings.Trim(input, "\n")
+	
+	response, err = strconv.Atoi(input)
 
-	response, _ = strconv.Atoi(strings.Trim(input, "\n"))
+	if err != nil {
+		err = fmt.Errorf("invalid amount") 
+		return
+	}
+
+	// validate amount should multiple of 10
+	if response % 10 != 0 {
+		err = fmt.Errorf("invalid amount") 
+		return
+	}
+
+	// validate amount should less than 1000
+	if response > 1000 {
+		err = fmt.Errorf("maximum amount to withdraw is $1000") 
+		return
+	}
 
 	return
 }

@@ -36,9 +36,18 @@ func (pl *fundTransfer) StartDisplay(cmd *schemas.Command) (err error) {
 		return
 	}
 
-	amount, command := fundTransferGetAmount()
+	if !utils.ValidateIsContainNumberOnly(destination) {
+		err = fmt.Errorf("invalid account") 
+		return
+	}
+
+	amount, command, err := fundTransferGetAmount()
 	if command > 0 {
 		cmd.Command = utils.TransactionCommand
+		return
+	}
+
+	if err != nil {
 		return
 	}
 
@@ -79,7 +88,7 @@ func (pl *fundTransfer) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func fundTransferGetAmount() (response int, command int){
+func fundTransferGetAmount() (response int, command int, err error){
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -92,7 +101,12 @@ func fundTransferGetAmount() (response int, command int){
 		command = utils.TransactionCommand
 	}
 
-	response, _ = strconv.Atoi(strings.Trim(input, "\n"))
+	input = strings.Trim(input, "\n")
+	response, err = strconv.Atoi(input)
+
+	if err != nil {
+		err = fmt.Errorf("invalid amount") 
+	}
 
 	return
 }

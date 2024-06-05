@@ -3,6 +3,7 @@ package cmd
 import (
 	"atm-simulation/datasource"
 	"atm-simulation/services"
+	"atm-simulation/utils"
 	"atm-simulation/views"
 	"fmt"
 )
@@ -23,7 +24,7 @@ func Start(){
 		result, err := Process(command)
 		if err != nil {
 			fmt.Println(err.Error())
-			break
+			result = utils.LoginCommand
 		}
 		
 		command = &result

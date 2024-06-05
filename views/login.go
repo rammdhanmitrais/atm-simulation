@@ -25,20 +25,34 @@ func (pl *login) StartDisplay(cmd *schemas.Command) (err error) {
 	fmt.Println()
 	fmt.Print("Enter Account Number: ")
 	account, _ := reader.ReadString('\n')
-	cmd.Arguments.From = strings.Trim(account, "\n")
-	if len(cmd.Arguments.From) != 6 {
+	account = strings.Trim(account, "\n")
+
+	if !utils.ValidateIsContainNumberOnly(account) {
+		err = fmt.Errorf("account number should only contains numbers") 
+		return
+	}
+
+	if len(account) != 6 {
 		err = fmt.Errorf("account number should have 6 digits length") 
 		return
 	}
 
 	fmt.Print("Enter Pin: ")
 	pin, _ := reader.ReadString('\n')
-	cmd.Arguments.Pin = strings.Trim(string(pin), "\n")
+	pin = strings.Trim(string(pin), "\n")
 
-	if len(cmd.Arguments.Pin) != 6 {
+	if !utils.ValidateIsContainNumberOnly(pin) {
+		err = fmt.Errorf("PIN should only contains numbers") 
+		return
+	}
+
+	if len(pin) != 6 {
 		err = fmt.Errorf("PIN should have 6 digits length") 
 		return
 	}
+
+	cmd.Arguments.From = account
+	cmd.Arguments.Pin = pin
 
 	return
 }
