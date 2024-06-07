@@ -1,9 +1,16 @@
-# Title
-<!--- Title of the changes -->
+# Problems
+<!--- What problems do you want to solve -->
+<!--- Ex: API get product list takes long time -->
+- ...
+
+# Purposes
+<!--- Solutions to be used to solve the problems -->
+<!--- Ex: Add mechanism using Redis -->
 - ...
 
 # Changes
-<!--- Please describe the changes here -->
+<!--- Please describe the changes or the solution here -->
+<!--- Ex: Call redis inside get product handler function, before querying to database -->
 - ...
 - ...
 
