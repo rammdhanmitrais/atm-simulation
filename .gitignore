@@ -16,10 +16,3 @@
 
 # Dependency directories (remove the comment below to include it)
 .vscode/
-vendor/
-ignoredmodule/postgres-data/
-
-# Go workspace file
-go.work
-
-.env
