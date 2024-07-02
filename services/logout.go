@@ -6,17 +6,17 @@ import (
 )
 
 type logout struct {
-	*services
+	repo datasource.Datasources
 }
 
-func NewLogout(s *services) *logout {
-	pl := &logout{s}
+func NewLogout(d datasource.Datasources) *logout {
+	pl := &logout{d}
 	return pl
 }
 
 func (pl *logout) Execute(cmd *schemas.Command) (err error) {
-	
-	datasource.LoggedUser = nil
+
+	err = pl.repo.Logout()
 
 	return
 }

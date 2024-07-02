@@ -8,11 +8,11 @@ import (
 )
 
 type withdraw struct {
-	*services
+	repo datasource.Datasources
 }
 
-func NewWithdraw(s *services) *withdraw {
-	pl := &withdraw{s}
+func NewWithdraw(d datasource.Datasources) *withdraw {
+	pl := &withdraw{d}
 	return pl
 }
 
@@ -20,7 +20,7 @@ func (pl *withdraw) Execute(cmd *schemas.Command) (err error) {
 	cmd.ExecutedDate = time.Now()
 
 	// get user
-	user, err := datasource.GetUserByAccountNumber(cmd.Arguments.From)
+	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
 	if err != nil {
 		return
 	}
@@ -30,8 +30,8 @@ func (pl *withdraw) Execute(cmd *schemas.Command) (err error) {
 		return
 	}
 
-	datasource.LoggedUser.Balance = user.Balance - cmd.Arguments.Amount
-	datasource.UserAccounts[user.Index] = *datasource.LoggedUser
+	balance := user.Balance - cmd.Arguments.Amount
+	err = pl.repo.UpdateUserBalance(user.Id, balance)
 
 	return
 }

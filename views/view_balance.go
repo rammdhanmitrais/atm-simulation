@@ -5,7 +5,6 @@ import (
 	"atm-simulation/schemas"
 	"atm-simulation/utils"
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -26,7 +25,7 @@ func (pl *viewBalance) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func (pl *viewBalance) EndDisplay(cmd *schemas.Command)(err error){
+func (pl *viewBalance) EndDisplay(cmd *schemas.Command) (err error) {
 	reader := bufio.NewReaderSize(os.Stdin, 1)
 
 	fmt.Println()
@@ -44,13 +43,13 @@ func (pl *viewBalance) EndDisplay(cmd *schemas.Command)(err error){
 	input, _ := strconv.Atoi(string(ascii))
 
 	if ascii == 27 || ascii == 3 {
-		err = errors.New("exit")
+		err = utils.ErrorExit
 		return
-	} 
+	}
 
 	if input == 1 {
 		cmd.Command = utils.TransactionCommand
-	}else{
+	} else {
 		cmd.Command = utils.LogoutCommand
 	}
 

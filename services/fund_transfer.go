@@ -3,17 +3,17 @@ package services
 import (
 	"atm-simulation/datasource"
 	"atm-simulation/schemas"
-	"errors"
+	"atm-simulation/utils"
 	"fmt"
 	"time"
 )
 
 type fundTransfer struct {
-	*services
+	repo datasource.Datasources
 }
 
-func NewFundTransfer(s *services) *fundTransfer {
-	pl := &fundTransfer{s}
+func NewFundTransfer(d datasource.Datasources) *fundTransfer {
+	pl := &fundTransfer{d}
 	return pl
 }
 
@@ -22,22 +22,22 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 
 	// validate argument
 	if cmd.Arguments.Amount > 1000 {
-		err = errors.New("maximum amount to transfer is $1000")
+		err = utils.ErrorMaximumAmountTransfer
 		return
 	}
 
 	if cmd.Arguments.Amount < 1 {
-		err = errors.New("minimum amount to transfer is $1")
+		err = utils.ErrorMinimumAmountTransfer
 		return
 	}
 
 	if cmd.Arguments.ReferenceNumber == "" {
-		err = errors.New("invalid reference number")
+		err = utils.ErrorReferenceNumber
 		return
 	}
 
 	// get from user
-	userFrom, err := datasource.GetUserByAccountNumber(cmd.Arguments.From)
+	userFrom, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
 
 	if err != nil {
 		return
@@ -49,18 +49,28 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 	}
 
 	// get from to
-	userTo, err := datasource.GetUserByAccountNumber(cmd.Arguments.To)
+	userTo, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.To)
 
 	if err != nil {
 		return
 	}
 
 	// modify balance from user
-	datasource.LoggedUser.Balance = userFrom.Balance - cmd.Arguments.Amount
-	datasource.UserAccounts[userFrom.Index] = *datasource.LoggedUser
+	balance := userFrom.Balance - cmd.Arguments.Amount
+	err = pl.repo.UpdateUserBalance(userFrom.Id, balance)
+	if err != nil {
+		return
+	}
 
 	// modify balance to user
-	datasource.UserAccounts[userTo.Index].Balance = userTo.Balance + cmd.Arguments.Amount
+	balance = userTo.Balance + cmd.Arguments.Amount
+	err = pl.repo.UpdateUserBalance(userTo.Id, balance)
+	if err != nil {
+		return
+	}
+
+	//re login to update logged user
+	err = pl.repo.Login(userFrom.Id)
 
 	return
 }

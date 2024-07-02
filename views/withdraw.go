@@ -5,7 +5,6 @@ import (
 	"atm-simulation/schemas"
 	"atm-simulation/utils"
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -24,14 +23,14 @@ func NewWithdraw(s *views) *withdraw {
 func (pl *withdraw) StartDisplay(cmd *schemas.Command) (err error) {
 
 	reader := bufio.NewReaderSize(os.Stdin, 1)
-	
+
 	idx := 1
 	fmt.Println()
-	for _, v := range utils.WithdrawValues{
+	for _, v := range utils.WithdrawValues {
 		fmt.Printf("%d $%d \n", idx, v)
 		idx++
 	}
-	
+
 	otherIdx := idx
 	fmt.Printf("%d Other\n", otherIdx)
 
@@ -44,7 +43,7 @@ func (pl *withdraw) StartDisplay(cmd *schemas.Command) (err error) {
 	input, _ := strconv.Atoi(string(ascii))
 
 	var value int64
-	if input > len(utils.WithdrawValues) + 2 || input < 1 || input == backIdx {
+	if input > len(utils.WithdrawValues)+2 || input < 1 || input == backIdx {
 		cmd.Command = utils.TransactionCommand
 		return
 	} else if input == otherIdx {
@@ -65,7 +64,7 @@ func (pl *withdraw) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func otherScreen() (response int, err error){
+func otherScreen() (response int, err error) {
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -75,30 +74,30 @@ func otherScreen() (response int, err error){
 
 	input, _ := reader.ReadString('\n')
 	input = strings.Trim(input, "\n")
-	
+
 	response, err = strconv.Atoi(input)
 
 	if err != nil {
-		err = fmt.Errorf("invalid amount") 
+		err = utils.ErrorInvalidAmount
 		return
 	}
 
 	// validate amount should multiple of 10
-	if response % 10 != 0 {
-		err = fmt.Errorf("invalid amount") 
+	if response%10 != 0 {
+		err = utils.ErrorInvalidAmount
 		return
 	}
 
 	// validate amount should less than 1000
 	if response > 1000 {
-		err = fmt.Errorf("maximum amount to withdraw is $1000") 
+		err = utils.ErrorMaximumAmountTransfer
 		return
 	}
 
 	return
 }
 
-func (pl *withdraw) EndDisplay(cmd *schemas.Command)(err error){
+func (pl *withdraw) EndDisplay(cmd *schemas.Command) (err error) {
 	reader := bufio.NewReaderSize(os.Stdin, 1)
 
 	fmt.Println()
@@ -116,13 +115,13 @@ func (pl *withdraw) EndDisplay(cmd *schemas.Command)(err error){
 	input, _ := strconv.Atoi(string(ascii))
 
 	if ascii == 27 || ascii == 3 {
-		err = errors.New("exit")
+		err = utils.ErrorExit
 		return
-	} 
+	}
 
 	if input == 1 {
 		cmd.Command = utils.TransactionCommand
-	}else{
+	} else {
 		cmd.Command = utils.LogoutCommand
 	}
 

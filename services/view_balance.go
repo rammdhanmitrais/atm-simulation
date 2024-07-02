@@ -1,15 +1,16 @@
 package services
 
 import (
+	"atm-simulation/datasource"
 	"atm-simulation/schemas"
 )
 
 type viewBalance struct {
-	*services
+	repo datasource.Datasources
 }
 
-func NewViewBalance(s *services) *viewBalance {
-	pl := &viewBalance{s}
+func NewViewBalance(d datasource.Datasources) *viewBalance {
+	pl := &viewBalance{d}
 	return pl
 }
 
