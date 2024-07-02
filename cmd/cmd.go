@@ -11,12 +11,10 @@ import (
 var Service services.Services
 var View views.Views
 
-func Start(){
-	Service = services.NewService()
+func Start() {
+	datasource := datasource.NewDatasource()
+	Service = services.NewService(datasource)
 	View = views.NewView()
-
-	//initiate datasource
-	datasource.NewUser()
 
 	var command *int
 	for {
@@ -26,7 +24,7 @@ func Start(){
 			fmt.Println(err.Error())
 			result = utils.LoginCommand
 		}
-		
+
 		command = &result
 	}
 }

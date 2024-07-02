@@ -5,12 +5,12 @@ import (
 )
 
 type views struct {
-	withdraw schemas.AtmMachineView
-	viewBalance schemas.AtmMachineView
+	withdraw     schemas.AtmMachineView
+	viewBalance  schemas.AtmMachineView
 	fundTransfer schemas.AtmMachineView
-	login schemas.AtmMachineView
-	logout schemas.AtmMachineView
-	transaction schemas.AtmMachineView
+	login        schemas.AtmMachineView
+	logout       schemas.AtmMachineView
+	transaction  schemas.AtmMachineView
 }
 
 func NewView() *views {

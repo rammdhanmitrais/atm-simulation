@@ -3,16 +3,16 @@ package services
 import (
 	"atm-simulation/datasource"
 	"atm-simulation/schemas"
-	"fmt"
+	"atm-simulation/utils"
 	"time"
 )
 
 type login struct {
-	*services
+	repo datasource.Datasources
 }
 
-func NewLogin(s *services) *login {
-	pl := &login{s}
+func NewLogin(d datasource.Datasources) *login {
+	pl := &login{d}
 	return pl
 }
 
@@ -20,26 +20,19 @@ func (pl *login) Execute(cmd *schemas.Command) (err error) {
 	cmd.ExecutedDate = time.Now()
 
 	// get user
-	user, err := datasource.GetUserByAccountNumber(cmd.Arguments.From)
+	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
 
 	if err != nil {
 		return
 	}
 
 	if user.AccountNumber == "" || user.Pin != cmd.Arguments.Pin {
-		err = fmt.Errorf("invalid account number/pin") 
+		err = utils.ErrorInvalidAccountPin
 		return
 	}
 
-	usr := datasource.User{
-		AccountNumber: user.AccountNumber,
-		Currency: user.Currency,
-		Name: user.Name,
-		Balance: user.Balance,
-		Pin: user.Pin,
-	}
-
-	datasource.LoggedUser = &usr
+	//login to update logged user
+	err = pl.repo.Login(user.Id)
 
 	return
 }

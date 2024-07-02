@@ -4,6 +4,6 @@ import (
 	"atm-simulation/cmd"
 )
 
-func main(){
+func main() {
 	cmd.Start()
 }

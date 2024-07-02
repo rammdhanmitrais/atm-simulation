@@ -5,7 +5,6 @@ import (
 	"atm-simulation/schemas"
 	"atm-simulation/utils"
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -37,7 +36,7 @@ func (pl *fundTransfer) StartDisplay(cmd *schemas.Command) (err error) {
 	}
 
 	if !utils.ValidateIsContainNumberOnly(destination) {
-		err = fmt.Errorf("invalid account") 
+		err = utils.ErrorInvalidAccount
 		return
 	}
 
@@ -72,9 +71,9 @@ func (pl *fundTransfer) StartDisplay(cmd *schemas.Command) (err error) {
 	input, _ := strconv.Atoi(string(ascii))
 
 	if ascii == 27 || ascii == 3 {
-		err = errors.New("exit")
+		err = utils.ErrorExit
 		return
-	} 
+	}
 
 	if input != 1 {
 		cmd.Command = utils.LogoutCommand
@@ -88,7 +87,7 @@ func (pl *fundTransfer) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func fundTransferGetAmount() (response int, command int, err error){
+func fundTransferGetAmount() (response int, command int, err error) {
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -105,13 +104,13 @@ func fundTransferGetAmount() (response int, command int, err error){
 	response, err = strconv.Atoi(input)
 
 	if err != nil {
-		err = fmt.Errorf("invalid amount") 
+		err = utils.ErrorInvalidAccount
 	}
 
 	return
 }
 
-func fundTransferGetReference() (response string, command int){
+func fundTransferGetReference() (response string, command int) {
 
 	reader := bufio.NewReader(os.Stdin)
 	reference := utils.GenerateNDigitRandom(6)
@@ -123,7 +122,7 @@ func fundTransferGetReference() (response string, command int){
 
 	ascii, _ := reader.ReadByte()
 	input, _ := strconv.Atoi(string(ascii))
-	
+
 	if input == 0 && ascii != 10 {
 		command = utils.TransactionCommand
 	}
@@ -133,8 +132,7 @@ func fundTransferGetReference() (response string, command int){
 	return
 }
 
-
-func (pl *fundTransfer) EndDisplay(cmd *schemas.Command)(err error){
+func (pl *fundTransfer) EndDisplay(cmd *schemas.Command) (err error) {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Println()
@@ -152,16 +150,15 @@ func (pl *fundTransfer) EndDisplay(cmd *schemas.Command)(err error){
 	input, _ := strconv.Atoi(string(ascii))
 
 	if ascii == 27 || ascii == 3 {
-		err = errors.New("exit")
+		err = utils.ErrorExit
 		return
-	} 
+	}
 
 	if input != 1 {
 		cmd.Command = utils.LogoutCommand
-	}else{
+	} else {
 		cmd.Command = utils.TransactionCommand
 	}
-	
 
 	return
 }

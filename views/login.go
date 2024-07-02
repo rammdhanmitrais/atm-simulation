@@ -28,12 +28,12 @@ func (pl *login) StartDisplay(cmd *schemas.Command) (err error) {
 	account = strings.Trim(account, "\n")
 
 	if !utils.ValidateIsContainNumberOnly(account) {
-		err = fmt.Errorf("account number should only contains numbers") 
+		err = utils.ErrorAccountNumberNotNumber
 		return
 	}
 
 	if len(account) != 6 {
-		err = fmt.Errorf("account number should have 6 digits length") 
+		err = utils.ErrorAccountNumberDigit
 		return
 	}
 
@@ -42,12 +42,12 @@ func (pl *login) StartDisplay(cmd *schemas.Command) (err error) {
 	pin = strings.Trim(string(pin), "\n")
 
 	if !utils.ValidateIsContainNumberOnly(pin) {
-		err = fmt.Errorf("PIN should only contains numbers") 
+		err = utils.ErrorPINNotNumber
 		return
 	}
 
 	if len(pin) != 6 {
-		err = fmt.Errorf("PIN should have 6 digits length") 
+		err = utils.ErrorPINDigit
 		return
 	}
 
@@ -57,7 +57,7 @@ func (pl *login) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func (pl *login) EndDisplay(cmd *schemas.Command) (err error){
+func (pl *login) EndDisplay(cmd *schemas.Command) (err error) {
 	fmt.Println()
 	fmt.Println("Login successfully")
 	cmd.Command = utils.TransactionCommand

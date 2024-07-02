@@ -1,25 +1,26 @@
 package services
 
 import (
+	"atm-simulation/datasource"
 	"atm-simulation/schemas"
 )
 
 type services struct {
-	withdraw schemas.AtmMachine
-	viewBalance schemas.AtmMachine
+	withdraw     schemas.AtmMachine
+	viewBalance  schemas.AtmMachine
 	fundTransfer schemas.AtmMachine
-	login schemas.AtmMachine
-	logout schemas.AtmMachine
+	login        schemas.AtmMachine
+	logout       schemas.AtmMachine
 }
 
-func NewService() *services {
+func NewService(d datasource.Datasources) *services {
 	st := new(services)
 
-	st.withdraw = NewWithdraw(st)
-	st.login = NewLogin(st)
-	st.logout = NewLogout(st)
-	st.viewBalance = NewViewBalance(st)
-	st.fundTransfer = NewFundTransfer(st)
+	st.withdraw = NewWithdraw(d)
+	st.login = NewLogin(d)
+	st.logout = NewLogout(d)
+	st.viewBalance = NewViewBalance(d)
+	st.fundTransfer = NewFundTransfer(d)
 
 	return st
 }

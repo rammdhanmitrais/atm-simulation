@@ -5,17 +5,17 @@ import (
 	"atm-simulation/utils"
 )
 
-func Process(input *int)(command int, err error){
+func Process(input *int) (command int, err error) {
 	var cmd = new(schemas.Command)
 
 	loginIndex := 0
 	if input == nil {
 		cmd.Command = loginIndex
 		input = &loginIndex
-	}else{
+	} else {
 		cmd.Command = *input
 	}
-	
+
 	// set service and view based on command
 	setAtmMachineConnection(cmd)
 

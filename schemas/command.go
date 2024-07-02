@@ -3,7 +3,7 @@ package schemas
 import "time"
 
 type AtmMachine interface {
-	Execute(cmd *Command) (error)
+	Execute(cmd *Command) error
 }
 
 type AtmMachineView interface {
@@ -13,16 +13,16 @@ type AtmMachineView interface {
 
 type Command struct {
 	Command      int
-	Arguments    Arguments	
-	Service   	 AtmMachine
-	View   		 AtmMachineView
+	Arguments    Arguments
+	Service      AtmMachine
+	View         AtmMachineView
 	ExecutedDate time.Time
 }
 
 type Arguments struct {
-	To      			string
-	From    			string
-	Amount 				int64
-	Pin 				string
-	ReferenceNumber 	string
+	To              string
+	From            string
+	Amount          int64
+	Pin             string
+	ReferenceNumber string
 }

@@ -19,7 +19,7 @@ func (pl *logout) StartDisplay(cmd *schemas.Command) (err error) {
 	return
 }
 
-func (pl *logout) EndDisplay(cmd *schemas.Command)(err error){
+func (pl *logout) EndDisplay(cmd *schemas.Command) (err error) {
 	fmt.Println()
 	fmt.Println("logout successfully")
 	cmd.Command = utils.LoginCommand
