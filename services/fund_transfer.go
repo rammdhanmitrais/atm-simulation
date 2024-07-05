@@ -4,7 +4,6 @@ import (
 	"atm-simulation/datasource"
 	"atm-simulation/schemas"
 	"atm-simulation/utils"
-	"fmt"
 	"time"
 )
 
@@ -18,6 +17,11 @@ func NewFundTransfer(d datasource.Datasources) *fundTransfer {
 }
 
 func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
+	if cmd == nil {
+		err = utils.ErrorCommand
+		return
+	}
+
 	cmd.ExecutedDate = time.Now()
 
 	// validate argument
@@ -44,7 +48,7 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 	}
 
 	if userFrom.Balance < cmd.Arguments.Amount {
-		err = fmt.Errorf("insufficient balance %s%d", userFrom.Currency, userFrom.Balance)
+		err = utils.SetErrorInsufficient(userFrom.Currency, userFrom.Balance)
 		return
 	}
 

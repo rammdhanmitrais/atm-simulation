@@ -1,6 +1,9 @@
 package utils
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var ErrorInvalidAccount = errors.New("invalid account")
 var ErrorInvalidAmount = errors.New("invalid amount")
@@ -14,3 +17,8 @@ var ErrorAccountNumberDigit = errors.New("account number should have 6 digits le
 var ErrorPINNotNumber = errors.New("PIN should only contains numbers")
 var ErrorPINDigit = errors.New("PIN should have 6 digits length")
 var ErrorExit = errors.New("exit")
+var ErrorCommand = errors.New("command invalid")
+
+func SetErrorInsufficient(curr string, balance int64) error {
+	return fmt.Errorf("insufficient balance %s%d", curr, balance)
+}
