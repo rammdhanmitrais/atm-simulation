@@ -17,11 +17,15 @@ func NewLogin(d datasource.Datasources) *login {
 }
 
 func (pl *login) Execute(cmd *schemas.Command) (err error) {
+	if cmd == nil {
+		err = utils.ErrorCommand
+		return
+	}
+
 	cmd.ExecutedDate = time.Now()
 
 	// get user
 	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
-
 	if err != nil {
 		return
 	}
