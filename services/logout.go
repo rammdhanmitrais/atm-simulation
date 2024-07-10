@@ -6,10 +6,10 @@ import (
 )
 
 type logout struct {
-	repo datasource.Datasources
+	repo datasource.UserDatasources
 }
 
-func NewLogout(d datasource.Datasources) *logout {
+func NewLogout(d datasource.UserDatasources) *logout {
 	pl := &logout{d}
 	return pl
 }

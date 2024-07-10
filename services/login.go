@@ -8,10 +8,10 @@ import (
 )
 
 type login struct {
-	repo datasource.Datasources
+	repo datasource.UserDatasources
 }
 
-func NewLogin(d datasource.Datasources) *login {
+func NewLogin(d datasource.UserDatasources) *login {
 	pl := &login{d}
 	return pl
 }

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var ds = new(datasource)
+var ds = NewUserDatasource()
 
 func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 
@@ -14,7 +14,7 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 	}
 	tests := []struct {
 		name       string
-		d          datasource
+		d          userDatasource
 		args       args
 		wantResult User
 		wantErr    bool
@@ -40,7 +40,7 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := datasource{}
+			d := userDatasource{}
 			gotResult, err := d.GetUserByAccountNumber(tt.args.accountNumber)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("datasource.GetUserByAccountNumber() error = %v, wantErr %v", err, tt.wantErr)
@@ -56,7 +56,7 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 func Test_datasource_GetLoggedUser(t *testing.T) {
 	tests := []struct {
 		name     string
-		d        datasource
+		d        userDatasource
 		wantUser User
 		wantErr  bool
 	}{
@@ -75,7 +75,7 @@ func Test_datasource_GetLoggedUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := datasource{}
+			d := userDatasource{}
 
 			userEmpty := User{}
 			if tt.wantUser != userEmpty {
@@ -101,7 +101,7 @@ func Test_datasource_UpdateUserBalance(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		d       datasource
+		d       userDatasource
 		args    args
 		wantErr bool
 	}{
@@ -126,7 +126,7 @@ func Test_datasource_UpdateUserBalance(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := datasource{}
+			d := userDatasource{}
 			if err := d.UpdateUserBalance(tt.args.id, tt.args.balance); (err != nil) != tt.wantErr {
 				t.Errorf("datasource.UpdateUserBalance() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -140,7 +140,7 @@ func Test_datasource_Login(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		d       datasource
+		d       userDatasource
 		args    args
 		wantErr bool
 	}{
@@ -163,7 +163,7 @@ func Test_datasource_Login(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := datasource{}
+			d := userDatasource{}
 
 			if !tt.wantErr {
 				LoggedUser = &userAccounts[0]
@@ -179,7 +179,7 @@ func Test_datasource_Login(t *testing.T) {
 func Test_datasource_Logout(t *testing.T) {
 	tests := []struct {
 		name    string
-		d       datasource
+		d       userDatasource
 		wantErr bool
 	}{
 		{
@@ -190,7 +190,7 @@ func Test_datasource_Logout(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := datasource{}
+			d := userDatasource{}
 			if err := d.Logout(); (err != nil) != tt.wantErr {
 				t.Errorf("datasource.Logout() error = %v, wantErr %v", err, tt.wantErr)
 			}

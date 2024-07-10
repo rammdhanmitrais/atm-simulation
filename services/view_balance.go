@@ -6,10 +6,10 @@ import (
 )
 
 type viewBalance struct {
-	repo datasource.Datasources
+	repo datasource.UserDatasources
 }
 
-func NewViewBalance(d datasource.Datasources) *viewBalance {
+func NewViewBalance(d datasource.UserDatasources) *viewBalance {
 	pl := &viewBalance{d}
 	return pl
 }

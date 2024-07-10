@@ -8,10 +8,10 @@ import (
 )
 
 type fundTransfer struct {
-	repo datasource.Datasources
+	repo datasource.UserDatasources
 }
 
-func NewFundTransfer(d datasource.Datasources) *fundTransfer {
+func NewFundTransfer(d datasource.UserDatasources) *fundTransfer {
 	pl := &fundTransfer{d}
 	return pl
 }

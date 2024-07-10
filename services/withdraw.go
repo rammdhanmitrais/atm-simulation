@@ -8,10 +8,10 @@ import (
 )
 
 type withdraw struct {
-	repo datasource.Datasources
+	repo datasource.UserDatasources
 }
 
-func NewWithdraw(d datasource.Datasources) *withdraw {
+func NewWithdraw(d datasource.UserDatasources) *withdraw {
 	pl := &withdraw{d}
 	return pl
 }
