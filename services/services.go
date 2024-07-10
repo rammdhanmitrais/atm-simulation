@@ -13,7 +13,7 @@ type services struct {
 	logout       schemas.AtmMachine
 }
 
-func NewService(d datasource.Datasources) *services {
+func NewService(d datasource.UserDatasources) *services {
 	st := new(services)
 
 	st.withdraw = NewWithdraw(d)

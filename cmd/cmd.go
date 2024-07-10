@@ -13,7 +13,7 @@ var View views.Views
 
 func Start() {
 	datasource := datasource.NewDatasource()
-	Service = services.NewService(datasource)
+	Service = services.NewService(datasource.UserDataSource)
 	View = views.NewView()
 
 	var command *int
