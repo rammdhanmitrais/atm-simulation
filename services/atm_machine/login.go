@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource"
@@ -25,12 +25,12 @@ func (pl *login) Execute(cmd *schemas.Command) (err error) {
 	cmd.ExecutedDate = time.Now()
 
 	// get user
-	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
+	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
 	if err != nil {
 		return
 	}
 
-	if user.AccountNumber == "" || user.Pin != cmd.Arguments.Pin {
+	if user.AccountNumber == "" || user.Pin != cmd.Arguments.AtmMachineArg.Pin {
 		err = utils.ErrorInvalidAccountPin
 		return
 	}

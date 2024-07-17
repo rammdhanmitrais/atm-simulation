@@ -79,10 +79,10 @@ func (pl *fundTransfer) StartDisplay(cmd *schemas.Command) (err error) {
 		cmd.Command = utils.LogoutCommand
 	}
 
-	cmd.Arguments.From = datasource.LoggedUser.AccountNumber
-	cmd.Arguments.To = destination
-	cmd.Arguments.Amount = int64(amount)
-	cmd.Arguments.ReferenceNumber = reference
+	cmd.Arguments.AtmMachineArg.From = datasource.LoggedUser.AccountNumber
+	cmd.Arguments.AtmMachineArg.To = destination
+	cmd.Arguments.AtmMachineArg.Amount = int64(amount)
+	cmd.Arguments.AtmMachineArg.ReferenceNumber = reference
 
 	return
 }
@@ -137,9 +137,9 @@ func (pl *fundTransfer) EndDisplay(cmd *schemas.Command) (err error) {
 
 	fmt.Println()
 	fmt.Println("Fund Transfer Summary")
-	fmt.Printf("Destination Account: %s\n", cmd.Arguments.To)
-	fmt.Printf("Transfer Amount: $%d\n", cmd.Arguments.Amount)
-	fmt.Printf("Reference Number: %s\n", cmd.Arguments.ReferenceNumber)
+	fmt.Printf("Destination Account: %s\n", cmd.Arguments.AtmMachineArg.To)
+	fmt.Printf("Transfer Amount: $%d\n", cmd.Arguments.AtmMachineArg.Amount)
+	fmt.Printf("Reference Number: %s\n", cmd.Arguments.AtmMachineArg.ReferenceNumber)
 
 	fmt.Println("1 Transaction")
 	fmt.Println("2 Exit")

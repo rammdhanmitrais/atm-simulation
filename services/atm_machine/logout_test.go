@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource/mock"
@@ -11,7 +11,7 @@ import (
 
 func Test_logout_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	mockDatasource := mock.NewMockDatasources(ctrl)
+	mockDatasource := mock.NewMockUserDatasources(ctrl)
 
 	type args struct {
 		cmd *schemas.Command

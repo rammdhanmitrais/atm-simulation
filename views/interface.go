@@ -5,10 +5,11 @@ import (
 )
 
 type Views interface {
-	Transaction() schemas.AtmMachineView
-	Withdraw() schemas.AtmMachineView
-	ViewBalance() schemas.AtmMachineView
-	FundTransfer() schemas.AtmMachineView
-	Login() schemas.AtmMachineView
-	Logout() schemas.AtmMachineView
+	Transaction() schemas.AtmSimulationView
+	Withdraw() schemas.AtmSimulationView
+	ViewBalance() schemas.AtmSimulationView
+	FundTransfer() schemas.AtmSimulationView
+	Login() schemas.AtmSimulationView
+	Logout() schemas.AtmSimulationView
+	ReadCsv() schemas.AtmSimulationView
 }

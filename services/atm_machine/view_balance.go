@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource"

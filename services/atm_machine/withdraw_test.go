@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource"
@@ -10,9 +10,9 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func Test_login_Execute(t *testing.T) {
+func Test_withdraw_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	mockDatasource := mock.NewMockDatasources(ctrl)
+	mockDatasource := mock.NewMockUserDatasources(ctrl)
 
 	type args struct {
 		cmd *schemas.Command
@@ -21,9 +21,17 @@ func Test_login_Execute(t *testing.T) {
 	arg := args{
 		cmd: &schemas.Command{
 			Arguments: schemas.Arguments{
-				Pin: "012345",
+				AtmMachineArg: schemas.AtmMachineArguments{
+					Amount:          500,
+					ReferenceNumber: "012345",
+				},
 			},
 		},
+	}
+
+	userData := datasource.User{
+		Balance:  200,
+		Currency: "$",
 	}
 
 	tests := []struct {
@@ -43,48 +51,61 @@ func Test_login_Execute(t *testing.T) {
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
-					Return(datasource.User{}, utils.ErrorInvalidAccount),
+					Return(&datasource.User{}, utils.ErrorInvalidAccount),
 			},
 			wantErr: true,
 		},
 		{
-			name: "Should return error when account number or PIN invalid",
+			name: "Should return error when user balance less than amount",
 			args: arg,
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
-					Return(datasource.User{
-						Pin: "123456",
-					}, nil),
+					Return(&userData, nil),
 			},
 			wantErr: true,
 		},
 		{
-			name: "Should return error when failed login",
-			args: arg,
+			name: "Should return error when failed update user balance",
+			args: args{
+				cmd: &schemas.Command{
+					Arguments: schemas.Arguments{
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount:          100,
+							ReferenceNumber: "012345",
+						},
+					},
+				},
+			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
-					Return(datasource.User{
-						Pin:           "012345",
-						AccountNumber: "12345678",
-					}, nil),
-				mockDatasource.EXPECT().Login(gomock.Any()).
+					Return(&userData, nil),
+				mockDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(utils.ErrorInvalidAccount),
+					Return(utils.ErrorInvalidAmount),
 			},
 			wantErr: true,
 		},
 		{
 			name: "Should return success",
-			args: arg,
+			args: args{
+				cmd: &schemas.Command{
+					Arguments: schemas.Arguments{
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount:          100,
+							ReferenceNumber: "012345",
+						},
+					},
+				},
+			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
-					Return(datasource.User{
-						Pin:           "012345",
-						AccountNumber: "12345678",
-					}, nil),
+					Return(&userData, nil),
+				mockDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(nil),
 				mockDatasource.EXPECT().Login(gomock.Any()).
 					Times(1).
 					Return(nil),
@@ -94,11 +115,11 @@ func Test_login_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			pl := &login{
+			pl := &withdraw{
 				repo: mockDatasource,
 			}
 			if err := pl.Execute(tt.args.cmd); (err != nil) != tt.wantErr {
-				t.Errorf("login.Execute() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("withdraw.Execute() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

@@ -58,8 +58,8 @@ func (pl *withdraw) StartDisplay(cmd *schemas.Command) (err error) {
 		value = utils.WithdrawValues[input-1]
 	}
 
-	cmd.Arguments.From = datasource.LoggedUser.AccountNumber
-	cmd.Arguments.Amount = value
+	cmd.Arguments.AtmMachineArg.From = datasource.LoggedUser.AccountNumber
+	cmd.Arguments.AtmMachineArg.Amount = value
 
 	return
 }
@@ -103,7 +103,7 @@ func (pl *withdraw) EndDisplay(cmd *schemas.Command) (err error) {
 	fmt.Println()
 	fmt.Println("Summary")
 	fmt.Printf("Date: %s\n", cmd.ExecutedDate.Format(utils.LayoutDateTime))
-	fmt.Printf("Withdraw: $%d\n", cmd.Arguments.Amount)
+	fmt.Printf("Withdraw: $%d\n", cmd.Arguments.AtmMachineArg.Amount)
 	fmt.Printf("Balance: $%d\n", datasource.LoggedUser.Balance)
 
 	fmt.Println("1 Transaction")

@@ -5,12 +5,13 @@ import (
 )
 
 type views struct {
-	withdraw     schemas.AtmMachineView
-	viewBalance  schemas.AtmMachineView
-	fundTransfer schemas.AtmMachineView
-	login        schemas.AtmMachineView
-	logout       schemas.AtmMachineView
-	transaction  schemas.AtmMachineView
+	withdraw     schemas.AtmSimulationView
+	viewBalance  schemas.AtmSimulationView
+	fundTransfer schemas.AtmSimulationView
+	login        schemas.AtmSimulationView
+	logout       schemas.AtmSimulationView
+	transaction  schemas.AtmSimulationView
+	readCsv      schemas.AtmSimulationView
 }
 
 func NewView() *views {
@@ -22,30 +23,35 @@ func NewView() *views {
 	st.viewBalance = NewViewBalance(st)
 	st.transaction = NewTransaction(st)
 	st.fundTransfer = NewFundTransfer(st)
+	st.readCsv = NewReadCsv(st)
 
 	return st
 }
 
-func (s views) Withdraw() schemas.AtmMachineView {
+func (s views) Withdraw() schemas.AtmSimulationView {
 	return s.withdraw
 }
 
-func (s views) ViewBalance() schemas.AtmMachineView {
+func (s views) ViewBalance() schemas.AtmSimulationView {
 	return s.viewBalance
 }
 
-func (s views) Login() schemas.AtmMachineView {
+func (s views) Login() schemas.AtmSimulationView {
 	return s.login
 }
 
-func (s views) Logout() schemas.AtmMachineView {
+func (s views) Logout() schemas.AtmSimulationView {
 	return s.logout
 }
 
-func (s views) Transaction() schemas.AtmMachineView {
+func (s views) Transaction() schemas.AtmSimulationView {
 	return s.transaction
 }
 
-func (s views) FundTransfer() schemas.AtmMachineView {
+func (s views) FundTransfer() schemas.AtmSimulationView {
 	return s.fundTransfer
+}
+
+func (s views) ReadCsv() schemas.AtmSimulationView {
+	return s.readCsv
 }

@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource"
@@ -12,7 +12,7 @@ import (
 
 func Test_fundTransfer_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	mockDatasource := mock.NewMockDatasources(ctrl)
+	mockDatasource := mock.NewMockUserDatasources(ctrl)
 
 	userData := datasource.User{
 		Balance:  200,
@@ -37,7 +37,9 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount: 1500,
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount: 1500,
+						},
 					},
 				},
 			},
@@ -48,7 +50,9 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount: 0,
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount: 0,
+						},
 					},
 				},
 			},
@@ -59,7 +63,9 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount: 500,
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount: 500,
+						},
 					},
 				},
 			},
@@ -70,15 +76,17 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount:          500,
-						ReferenceNumber: "012345",
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount:          500,
+							ReferenceNumber: "012345",
+						},
 					},
 				},
 			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
-					Return(datasource.User{}, utils.ErrorInvalidAccount),
+					Return(&datasource.User{}, utils.ErrorInvalidAccount),
 			},
 			wantErr: true,
 		},
@@ -87,15 +95,17 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount:          500,
-						ReferenceNumber: "012345",
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount:          500,
+							ReferenceNumber: "012345",
+						},
 					},
 				},
 			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
-					Return(userData, nil),
+					Return(&userData, nil),
 			},
 			wantErr: true,
 		},
@@ -104,15 +114,17 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount:          150,
-						ReferenceNumber: "012345",
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount:          150,
+							ReferenceNumber: "012345",
+						},
 					},
 				},
 			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(2).
-					Return(userData, nil),
+					Return(&userData, nil),
 
 				mockDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -125,15 +137,17 @@ func Test_fundTransfer_Execute(t *testing.T) {
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
-						Amount:          150,
-						ReferenceNumber: "012345",
+						AtmMachineArg: schemas.AtmMachineArguments{
+							Amount:          150,
+							ReferenceNumber: "012345",
+						},
 					},
 				},
 			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(2).
-					Return(userData, nil),
+					Return(&userData, nil),
 
 				mockDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
 					Times(2).

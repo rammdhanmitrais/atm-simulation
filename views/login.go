@@ -51,8 +51,8 @@ func (pl *login) StartDisplay(cmd *schemas.Command) (err error) {
 		return
 	}
 
-	cmd.Arguments.From = account
-	cmd.Arguments.Pin = pin
+	cmd.Arguments.AtmMachineArg.From = account
+	cmd.Arguments.AtmMachineArg.Pin = pin
 
 	return
 }

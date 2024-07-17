@@ -8,10 +8,10 @@ import (
 func Process(input *int) (command int, err error) {
 	var cmd = new(schemas.Command)
 
-	loginIndex := 0
+	defaultCommand := utils.FirstCommand
 	if input == nil {
-		cmd.Command = loginIndex
-		input = &loginIndex
+		cmd.Command = defaultCommand
+		input = &defaultCommand
 	} else {
 		cmd.Command = *input
 	}
@@ -49,21 +49,24 @@ func Process(input *int) (command int, err error) {
 func setAtmMachineConnection(command *schemas.Command) {
 	switch command.Command {
 	case utils.LoginCommand:
-		command.Service = Service.Login()
+		command.Service = atmMachineService.Login()
 		command.View = View.Login()
 	case utils.TransactionCommand:
 		command.View = View.Transaction()
 	case utils.WithdrawCommand:
-		command.Service = Service.Withdraw()
+		command.Service = atmMachineService.Withdraw()
 		command.View = View.Withdraw()
 	case utils.ViewBalanceCommand:
-		command.Service = Service.ViewBalance()
+		command.Service = atmMachineService.ViewBalance()
 		command.View = View.ViewBalance()
 	case utils.FundTransferCommand:
-		command.Service = Service.FundTransfer()
+		command.Service = atmMachineService.FundTransfer()
 		command.View = View.FundTransfer()
 	case utils.LogoutCommand:
-		command.Service = Service.Logout()
+		command.Service = atmMachineService.Logout()
 		command.View = View.Logout()
+	case utils.ChangeDatasourceCommand:
+		command.Service = csvServices.ReadCsv()
+		command.View = View.ReadCsv()
 	}
 }

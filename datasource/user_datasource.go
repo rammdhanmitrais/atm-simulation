@@ -12,7 +12,7 @@ type User struct {
 }
 
 var LoggedUser *User
-var userAccounts = [2]User{
+var DefaultUsers = [2]User{
 	{
 		Id:            1,
 		Name:          "John Doe",
@@ -31,16 +31,28 @@ var userAccounts = [2]User{
 	},
 }
 
+var userAccounts = []User{}
+
+type UserDatasources interface {
+	GetUserByAccountNumber(accountNumber string) (result *User, err error)
+	GetLoggedUser() (user *User, err error)
+	UpdateUserBalance(id int, balance int64) (err error)
+	InsertUser(user User) (err error)
+	Login(id int) (err error)
+	Logout() (err error)
+	InitiateDefaultUser()
+}
+
 type userDatasource struct{}
 
 func NewUserDatasource() *userDatasource {
 	return &userDatasource{}
 }
 
-func (d userDatasource) GetUserByAccountNumber(accountNumber string) (result User, err error) {
+func (d userDatasource) GetUserByAccountNumber(accountNumber string) (result *User, err error) {
 	for _, user := range userAccounts {
 		if user.AccountNumber == accountNumber {
-			result = user
+			result = &user
 			return
 		}
 	}
@@ -50,13 +62,13 @@ func (d userDatasource) GetUserByAccountNumber(accountNumber string) (result Use
 	return
 }
 
-func (d userDatasource) GetLoggedUser() (user User, err error) {
+func (d userDatasource) GetLoggedUser() (user *User, err error) {
 	if LoggedUser == nil {
 		err = utils.ErrorUserLogged
 		return
 	}
 
-	user = *LoggedUser
+	user = LoggedUser
 	return
 }
 
@@ -94,4 +106,20 @@ func (d userDatasource) Logout() (err error) {
 	LoggedUser = nil
 
 	return
+}
+
+func (d userDatasource) InsertUser(user User) (err error) {
+	if user.Id < 0 {
+		user.Id = len(userAccounts) + 1
+	}
+
+	userAccounts = append(userAccounts, user)
+
+	return
+}
+
+func (d userDatasource) InitiateDefaultUser() {
+	for _, user := range DefaultUsers {
+		userAccounts = append(userAccounts, user)
+	}
 }

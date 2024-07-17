@@ -18,7 +18,18 @@ var ErrorPINNotNumber = errors.New("PIN should only contains numbers")
 var ErrorPINDigit = errors.New("PIN should have 6 digits length")
 var ErrorExit = errors.New("exit")
 var ErrorCommand = errors.New("command invalid")
+var ErrorValuesRecordInvalid = errors.New("record has invalid values")
+var ErrorAccountNumberAlreadyExist = errors.New("account number already exist")
+var ErrorOccurs = errors.New("there are problems happen")
 
 func SetErrorInsufficient(curr string, balance int64) error {
 	return fmt.Errorf("insufficient balance %s%d", curr, balance)
+}
+
+func SetErrorDuplicateAccountNumber(accountNumber string) error {
+	return fmt.Errorf("there can't be 2 different accounts with the same account number %s", accountNumber)
+}
+
+func SetErrorDuplicateRecord(record string) error {
+	return fmt.Errorf("there can't be duplicated records %s", record)
 }

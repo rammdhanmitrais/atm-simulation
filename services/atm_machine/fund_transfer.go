@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource"
@@ -25,49 +25,49 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 	cmd.ExecutedDate = time.Now()
 
 	// validate argument
-	if cmd.Arguments.Amount > 1000 {
+	if cmd.Arguments.AtmMachineArg.Amount > 1000 {
 		err = utils.ErrorMaximumAmountTransfer
 		return
 	}
 
-	if cmd.Arguments.Amount < 1 {
+	if cmd.Arguments.AtmMachineArg.Amount < 1 {
 		err = utils.ErrorMinimumAmountTransfer
 		return
 	}
 
-	if cmd.Arguments.ReferenceNumber == "" {
+	if cmd.Arguments.AtmMachineArg.ReferenceNumber == "" {
 		err = utils.ErrorReferenceNumber
 		return
 	}
 
 	// get from user
-	userFrom, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
+	userFrom, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
 
 	if err != nil {
 		return
 	}
 
-	if userFrom.Balance < cmd.Arguments.Amount {
+	if userFrom.Balance < cmd.Arguments.AtmMachineArg.Amount {
 		err = utils.SetErrorInsufficient(userFrom.Currency, userFrom.Balance)
 		return
 	}
 
 	// get from to
-	userTo, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.To)
+	userTo, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.To)
 
 	if err != nil {
 		return
 	}
 
 	// modify balance from user
-	balance := userFrom.Balance - cmd.Arguments.Amount
+	balance := userFrom.Balance - cmd.Arguments.AtmMachineArg.Amount
 	err = pl.repo.UpdateUserBalance(userFrom.Id, balance)
 	if err != nil {
 		return
 	}
 
 	// modify balance to user
-	balance = userTo.Balance + cmd.Arguments.Amount
+	balance = userTo.Balance + cmd.Arguments.AtmMachineArg.Amount
 	err = pl.repo.UpdateUserBalance(userTo.Id, balance)
 	if err != nil {
 		return

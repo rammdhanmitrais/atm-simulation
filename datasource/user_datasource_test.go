@@ -8,6 +8,7 @@ import (
 var ds = NewUserDatasource()
 
 func Test_datasource_GetUserByAccountNumber(t *testing.T) {
+	ds.InitiateDefaultUser()
 
 	type args struct {
 		accountNumber string
@@ -16,7 +17,7 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 		name       string
 		d          userDatasource
 		args       args
-		wantResult User
+		wantResult *User
 		wantErr    bool
 	}{
 		{
@@ -26,7 +27,7 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 			},
 			d:          *ds,
 			wantErr:    true,
-			wantResult: User{},
+			wantResult: nil,
 		},
 		{
 			name: "Should return success",
@@ -35,7 +36,7 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 			},
 			d:          *ds,
 			wantErr:    false,
-			wantResult: userAccounts[0],
+			wantResult: &userAccounts[0],
 		},
 	}
 	for _, tt := range tests {
@@ -54,31 +55,32 @@ func Test_datasource_GetUserByAccountNumber(t *testing.T) {
 }
 
 func Test_datasource_GetLoggedUser(t *testing.T) {
+	ds.InitiateDefaultUser()
+
 	tests := []struct {
 		name     string
 		d        userDatasource
-		wantUser User
+		wantUser *User
 		wantErr  bool
 	}{
 		{
 			name:     "Should return error when account not found",
 			d:        *ds,
 			wantErr:  true,
-			wantUser: User{},
+			wantUser: nil,
 		},
 		{
 			name:     "Should return success",
 			d:        *ds,
 			wantErr:  false,
-			wantUser: userAccounts[0],
+			wantUser: &userAccounts[0],
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := userDatasource{}
 
-			userEmpty := User{}
-			if tt.wantUser != userEmpty {
+			if tt.wantUser != nil {
 				LoggedUser = &userAccounts[0]
 			}
 
@@ -95,6 +97,8 @@ func Test_datasource_GetLoggedUser(t *testing.T) {
 }
 
 func Test_datasource_UpdateUserBalance(t *testing.T) {
+	ds.InitiateDefaultUser()
+
 	type args struct {
 		id      int
 		balance int64
@@ -135,6 +139,8 @@ func Test_datasource_UpdateUserBalance(t *testing.T) {
 }
 
 func Test_datasource_Login(t *testing.T) {
+	ds.InitiateDefaultUser()
+
 	type args struct {
 		id int
 	}
@@ -177,6 +183,7 @@ func Test_datasource_Login(t *testing.T) {
 }
 
 func Test_datasource_Logout(t *testing.T) {
+	ds.InitiateDefaultUser()
 	tests := []struct {
 		name    string
 		d       userDatasource

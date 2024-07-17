@@ -1,4 +1,4 @@
-package services
+package atm_machine
 
 import (
 	"atm-simulation/datasource"
@@ -25,17 +25,17 @@ func (pl *withdraw) Execute(cmd *schemas.Command) (err error) {
 	cmd.ExecutedDate = time.Now()
 
 	// get user
-	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.From)
+	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
 	if err != nil {
 		return
 	}
 
-	if user.Balance < cmd.Arguments.Amount {
+	if user.Balance < cmd.Arguments.AtmMachineArg.Amount {
 		err = utils.SetErrorInsufficient(user.Currency, user.Balance)
 		return
 	}
 
-	balance := user.Balance - cmd.Arguments.Amount
+	balance := user.Balance - cmd.Arguments.AtmMachineArg.Amount
 	err = pl.repo.UpdateUserBalance(user.Id, balance)
 	if err != nil {
 		return
