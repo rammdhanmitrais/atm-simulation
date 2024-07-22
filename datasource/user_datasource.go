@@ -1,14 +1,17 @@
 package datasource
 
-import "atm-simulation/utils"
+import (
+	"atm-simulation/utils"
+)
 
 type User struct {
-	Id            int
-	Name          string
-	Pin           string
-	Balance       int64
-	Currency      string
-	AccountNumber string
+	Id                 int
+	Name               string
+	Pin                string
+	Balance            int64
+	Currency           string
+	AccountNumber      string
+	TransactionHistory []Transaction
 }
 
 var LoggedUser *User
@@ -41,6 +44,7 @@ type UserDatasources interface {
 	Login(id int) (err error)
 	Logout() (err error)
 	InitiateDefaultUser()
+	UpdateLoggedUserTransactionHistory(transactions []Transaction)
 }
 
 type userDatasource struct{}
@@ -116,6 +120,10 @@ func (d userDatasource) InsertUser(user User) (err error) {
 	userAccounts = append(userAccounts, user)
 
 	return
+}
+
+func (d userDatasource) UpdateLoggedUserTransactionHistory(transactions []Transaction) {
+	LoggedUser.TransactionHistory = transactions
 }
 
 func (d userDatasource) InitiateDefaultUser() {

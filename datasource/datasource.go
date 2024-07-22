@@ -1,11 +1,13 @@
 package datasource
 
 type datasource struct {
-	UserDataSource *userDatasource
+	UserDatasource        *userDatasource
+	TransactionDatasource *transactionDatasource
 }
 
 func NewDatasource() *datasource {
 	ds := new(datasource)
-	ds.UserDataSource = NewUserDatasource()
+	ds.UserDatasource = NewUserDatasource()
+	ds.TransactionDatasource = NewTransactionDatasource()
 	return ds
 }

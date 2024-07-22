@@ -123,6 +123,18 @@ func (mr *MockUserDatasourcesMockRecorder) Logout() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Logout", reflect.TypeOf((*MockUserDatasources)(nil).Logout))
 }
 
+// UpdateLoggedUserTransactionHistory mocks base method.
+func (m *MockUserDatasources) UpdateLoggedUserTransactionHistory(transactions []datasource.Transaction) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "UpdateLoggedUserTransactionHistory", transactions)
+}
+
+// UpdateLoggedUserTransactionHistory indicates an expected call of UpdateLoggedUserTransactionHistory.
+func (mr *MockUserDatasourcesMockRecorder) UpdateLoggedUserTransactionHistory(transactions any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLoggedUserTransactionHistory", reflect.TypeOf((*MockUserDatasources)(nil).UpdateLoggedUserTransactionHistory), transactions)
+}
+
 // UpdateUserBalance mocks base method.
 func (m *MockUserDatasources) UpdateUserBalance(id int, balance int64) error {
 	m.ctrl.T.Helper()

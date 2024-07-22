@@ -10,4 +10,5 @@ type AtmMachineServices interface {
 	FundTransfer() schemas.AtmSimulation
 	Login() schemas.AtmSimulation
 	Logout() schemas.AtmSimulation
+	TransactionHistory() schemas.AtmSimulation
 }

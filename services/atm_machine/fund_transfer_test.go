@@ -12,7 +12,8 @@ import (
 
 func Test_fundTransfer_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	mockDatasource := mock.NewMockUserDatasources(ctrl)
+	mockUserDatasource := mock.NewMockUserDatasources(ctrl)
+	mockTransactionDatasource := mock.NewMockTransactionDatasources(ctrl)
 
 	userData := datasource.User{
 		Balance:  200,
@@ -84,7 +85,7 @@ func Test_fundTransfer_Execute(t *testing.T) {
 				},
 			},
 			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
+				mockUserDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
 					Return(&datasource.User{}, utils.ErrorInvalidAccount),
 			},
@@ -103,7 +104,7 @@ func Test_fundTransfer_Execute(t *testing.T) {
 				},
 			},
 			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
+				mockUserDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(1).
 					Return(&userData, nil),
 			},
@@ -122,11 +123,11 @@ func Test_fundTransfer_Execute(t *testing.T) {
 				},
 			},
 			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
+				mockUserDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(2).
 					Return(&userData, nil),
 
-				mockDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
+				mockUserDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(utils.ErrorInvalidAmount),
 			},
@@ -145,15 +146,19 @@ func Test_fundTransfer_Execute(t *testing.T) {
 				},
 			},
 			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
+				mockUserDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
 					Times(2).
 					Return(&userData, nil),
 
-				mockDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
+				mockUserDatasource.EXPECT().UpdateUserBalance(gomock.Any(), gomock.Any()).
 					Times(2).
 					Return(nil),
 
-				mockDatasource.EXPECT().Login(gomock.Any()).
+				mockTransactionDatasource.EXPECT().InsertTransactionHistory(gomock.Any()).
+					Times(2).
+					Return(nil),
+
+				mockUserDatasource.EXPECT().Login(gomock.Any()).
 					Times(1).
 					Return(nil),
 			},
@@ -163,7 +168,10 @@ func Test_fundTransfer_Execute(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			pl := &fundTransfer{
-				repo: mockDatasource,
+				repo: ServiceDatasources{
+					mockUserDatasource,
+					mockTransactionDatasource,
+				},
 			}
 
 			err := pl.Execute(tt.args.cmd)

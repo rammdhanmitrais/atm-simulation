@@ -87,6 +87,7 @@ func (pl *readCsv) readCsv(cmd *schemas.Command) (err error) {
 
 		balance, _ := strconv.Atoi(record[2])
 		user := datasource.User{
+			Id:            -1,
 			Name:          record[0],
 			Pin:           record[1],
 			Balance:       int64(balance),

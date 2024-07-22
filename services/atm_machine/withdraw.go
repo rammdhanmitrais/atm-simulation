@@ -8,10 +8,10 @@ import (
 )
 
 type withdraw struct {
-	repo datasource.UserDatasources
+	repo ServiceDatasources
 }
 
-func NewWithdraw(d datasource.UserDatasources) *withdraw {
+func NewWithdraw(d ServiceDatasources) *withdraw {
 	pl := &withdraw{d}
 	return pl
 }
@@ -22,10 +22,11 @@ func (pl *withdraw) Execute(cmd *schemas.Command) (err error) {
 		return
 	}
 
-	cmd.ExecutedDate = time.Now()
+	timeNow := time.Now()
+	cmd.ExecutedDate = timeNow
 
 	// get user
-	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
+	user, err := pl.repo.UserDatasource.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
 	if err != nil {
 		return
 	}
@@ -36,13 +37,25 @@ func (pl *withdraw) Execute(cmd *schemas.Command) (err error) {
 	}
 
 	balance := user.Balance - cmd.Arguments.AtmMachineArg.Amount
-	err = pl.repo.UpdateUserBalance(user.Id, balance)
+	err = pl.repo.UserDatasource.UpdateUserBalance(user.Id, balance)
 	if err != nil {
 		return
 	}
 
+	// insert transaction for from user
+	transaction := datasource.Transaction{
+		AccountNumber:   user.AccountNumber,
+		InitialBalance:  user.Balance,
+		Amount:          cmd.Arguments.AtmMachineArg.Amount,
+		Type:            utils.Withdraw,
+		TransactionDate: timeNow,
+		CreditOrDebit:   utils.Credit,
+	}
+
+	_ = pl.repo.TransactionDatasource.InsertTransactionHistory(transaction)
+
 	//re login to update logged user
-	err = pl.repo.Login(user.Id)
+	err = pl.repo.UserDatasource.Login(user.Id)
 
 	return
 }

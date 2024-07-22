@@ -4,14 +4,15 @@ import (
 	"atm-simulation/datasource"
 	"atm-simulation/schemas"
 	"atm-simulation/utils"
+	"log"
 	"time"
 )
 
 type fundTransfer struct {
-	repo datasource.UserDatasources
+	repo ServiceDatasources
 }
 
-func NewFundTransfer(d datasource.UserDatasources) *fundTransfer {
+func NewFundTransfer(d ServiceDatasources) *fundTransfer {
 	pl := &fundTransfer{d}
 	return pl
 }
@@ -22,7 +23,8 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 		return
 	}
 
-	cmd.ExecutedDate = time.Now()
+	timeNow := time.Now()
+	cmd.ExecutedDate = timeNow
 
 	// validate argument
 	if cmd.Arguments.AtmMachineArg.Amount > 1000 {
@@ -41,7 +43,7 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 	}
 
 	// get from user
-	userFrom, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
+	userFrom, err := pl.repo.UserDatasource.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
 
 	if err != nil {
 		return
@@ -53,28 +55,57 @@ func (pl *fundTransfer) Execute(cmd *schemas.Command) (err error) {
 	}
 
 	// get from to
-	userTo, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.To)
+	userTo, err := pl.repo.UserDatasource.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.To)
 
 	if err != nil {
 		return
 	}
 
 	// modify balance from user
-	balance := userFrom.Balance - cmd.Arguments.AtmMachineArg.Amount
-	err = pl.repo.UpdateUserBalance(userFrom.Id, balance)
+	fromBalance := userFrom.Balance - cmd.Arguments.AtmMachineArg.Amount
+	err = pl.repo.UserDatasource.UpdateUserBalance(userFrom.Id, fromBalance)
 	if err != nil {
 		return
 	}
 
 	// modify balance to user
-	balance = userTo.Balance + cmd.Arguments.AtmMachineArg.Amount
-	err = pl.repo.UpdateUserBalance(userTo.Id, balance)
+	toBalance := userTo.Balance + cmd.Arguments.AtmMachineArg.Amount
+	err = pl.repo.UserDatasource.UpdateUserBalance(userTo.Id, toBalance)
 	if err != nil {
 		return
 	}
 
+	// insert transaction for from user
+	transaction := datasource.Transaction{
+		AccountNumber:       userFrom.AccountNumber,
+		FromToAccountNumber: userTo.AccountNumber,
+		InitialBalance:      userFrom.Balance,
+		Amount:              cmd.Arguments.AtmMachineArg.Amount,
+		Type:                utils.FundTransfer,
+		TransactionDate:     timeNow,
+		CreditOrDebit:       utils.Credit,
+	}
+
+	_ = pl.repo.TransactionDatasource.InsertTransactionHistory(transaction)
+
+	// insert transaction for to user
+	toTransaction := datasource.Transaction{
+		AccountNumber:       userTo.AccountNumber,
+		FromToAccountNumber: userFrom.AccountNumber,
+		InitialBalance:      userTo.Balance,
+		Amount:              cmd.Arguments.AtmMachineArg.Amount,
+		Type:                utils.FundTransfer,
+		TransactionDate:     timeNow,
+		CreditOrDebit:       utils.Debit,
+	}
+
+	_ = pl.repo.TransactionDatasource.InsertTransactionHistory(toTransaction)
+
 	//re login to update logged user
-	err = pl.repo.Login(userFrom.Id)
+	err = pl.repo.UserDatasource.Login(userFrom.Id)
+	if err != nil {
+		log.Println(err)
+	}
 
 	return
 }

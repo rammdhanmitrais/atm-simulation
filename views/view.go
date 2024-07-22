@@ -5,13 +5,14 @@ import (
 )
 
 type views struct {
-	withdraw     schemas.AtmSimulationView
-	viewBalance  schemas.AtmSimulationView
-	fundTransfer schemas.AtmSimulationView
-	login        schemas.AtmSimulationView
-	logout       schemas.AtmSimulationView
-	transaction  schemas.AtmSimulationView
-	readCsv      schemas.AtmSimulationView
+	withdraw           schemas.AtmSimulationView
+	viewBalance        schemas.AtmSimulationView
+	fundTransfer       schemas.AtmSimulationView
+	login              schemas.AtmSimulationView
+	logout             schemas.AtmSimulationView
+	transaction        schemas.AtmSimulationView
+	transactionHistory schemas.AtmSimulationView
+	readCsv            schemas.AtmSimulationView
 }
 
 func NewView() *views {
@@ -22,6 +23,7 @@ func NewView() *views {
 	st.logout = NewLogout(st)
 	st.viewBalance = NewViewBalance(st)
 	st.transaction = NewTransaction(st)
+	st.transactionHistory = NewTransactionHistory(st)
 	st.fundTransfer = NewFundTransfer(st)
 	st.readCsv = NewReadCsv(st)
 
@@ -46,6 +48,10 @@ func (s views) Logout() schemas.AtmSimulationView {
 
 func (s views) Transaction() schemas.AtmSimulationView {
 	return s.transaction
+}
+
+func (s views) TransactionHistory() schemas.AtmSimulationView {
+	return s.transactionHistory
 }
 
 func (s views) FundTransfer() schemas.AtmSimulationView {

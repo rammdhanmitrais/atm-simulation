@@ -1,17 +1,16 @@
 package atm_machine
 
 import (
-	"atm-simulation/datasource"
 	"atm-simulation/schemas"
 	"atm-simulation/utils"
 	"time"
 )
 
 type login struct {
-	repo datasource.UserDatasources
+	repo ServiceDatasources
 }
 
-func NewLogin(d datasource.UserDatasources) *login {
+func NewLogin(d ServiceDatasources) *login {
 	pl := &login{d}
 	return pl
 }
@@ -25,7 +24,7 @@ func (pl *login) Execute(cmd *schemas.Command) (err error) {
 	cmd.ExecutedDate = time.Now()
 
 	// get user
-	user, err := pl.repo.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
+	user, err := pl.repo.UserDatasource.GetUserByAccountNumber(cmd.Arguments.AtmMachineArg.From)
 	if err != nil {
 		return
 	}
@@ -36,7 +35,7 @@ func (pl *login) Execute(cmd *schemas.Command) (err error) {
 	}
 
 	//login to update logged user
-	err = pl.repo.Login(user.Id)
+	err = pl.repo.UserDatasource.Login(user.Id)
 
 	return
 }

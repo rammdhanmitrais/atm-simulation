@@ -11,7 +11,8 @@ import (
 
 func Test_logout_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	mockDatasource := mock.NewMockUserDatasources(ctrl)
+	mockUserDatasource := mock.NewMockUserDatasources(ctrl)
+	mockTransactionDatasource := mock.NewMockTransactionDatasources(ctrl)
 
 	type args struct {
 		cmd *schemas.Command
@@ -25,7 +26,7 @@ func Test_logout_Execute(t *testing.T) {
 		{
 			name: "Should return error when failed logout",
 			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().Logout().
+				mockUserDatasource.EXPECT().Logout().
 					Times(1).
 					Return(utils.ErrorInvalidAccount),
 			},
@@ -34,7 +35,7 @@ func Test_logout_Execute(t *testing.T) {
 		{
 			name: "Should return success",
 			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().Logout().
+				mockUserDatasource.EXPECT().Logout().
 					Times(1).
 					Return(nil),
 			},
@@ -44,7 +45,10 @@ func Test_logout_Execute(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			pl := &logout{
-				repo: mockDatasource,
+				repo: ServiceDatasources{
+					mockUserDatasource,
+					mockTransactionDatasource,
+				},
 			}
 			if err := pl.Execute(tt.args.cmd); (err != nil) != tt.wantErr {
 				t.Errorf("logout.Execute() error = %v, wantErr %v", err, tt.wantErr)

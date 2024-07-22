@@ -14,9 +14,15 @@ var csvServices csv.CsvServices
 var View views.Views
 
 func Start() {
-	datasource := datasource.NewUserDatasource()
-	atmMachineService = atm_machine.NewAtmMachineService(datasource)
-	csvServices = csv.NewCsvService(datasource)
+	userDatasource := datasource.NewUserDatasource()
+	transactionDatasource := datasource.NewTransactionDatasource()
+	serviceDatasource := atm_machine.ServiceDatasources{
+		UserDatasource:        userDatasource,
+		TransactionDatasource: transactionDatasource,
+	}
+
+	atmMachineService = atm_machine.NewAtmMachineService(serviceDatasource)
+	csvServices = csv.NewCsvService(userDatasource)
 	View = views.NewView()
 
 	var command *int

@@ -26,8 +26,9 @@ func (pl *transaction) StartDisplay(cmd *schemas.Command) (err error) {
 	fmt.Printf("1 %s \n", utils.Withdraw)
 	fmt.Printf("2 %s \n", utils.ViewBalance)
 	fmt.Printf("3 %s \n", utils.FundTransfer)
-	fmt.Printf("4 %s \n", utils.Exit)
-	fmt.Print("Please choose option[4]: ")
+	fmt.Printf("4 %s \n", utils.TransactionHistory)
+	fmt.Printf("5 %s \n", utils.Exit)
+	fmt.Print("Please choose option[5]: ")
 
 	ascii, _ := reader.ReadByte()
 	input, _ := strconv.Atoi(string(ascii))
@@ -44,6 +45,8 @@ func (pl *transaction) StartDisplay(cmd *schemas.Command) (err error) {
 	case 3:
 		cmd.Command = utils.FundTransferCommand
 	case 4:
+		cmd.Command = utils.TransactionHistoryCommand
+	case 5:
 		cmd.Command = utils.LogoutCommand
 	default:
 		cmd.Command = utils.LogoutCommand

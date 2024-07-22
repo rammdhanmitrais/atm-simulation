@@ -5,15 +5,21 @@ import (
 	"atm-simulation/schemas"
 )
 
-type atmMachineServices struct {
-	withdraw     schemas.AtmSimulation
-	viewBalance  schemas.AtmSimulation
-	fundTransfer schemas.AtmSimulation
-	login        schemas.AtmSimulation
-	logout       schemas.AtmSimulation
+type ServiceDatasources struct {
+	UserDatasource        datasource.UserDatasources
+	TransactionDatasource datasource.TransactionDatasources
 }
 
-func NewAtmMachineService(d datasource.UserDatasources) *atmMachineServices {
+type atmMachineServices struct {
+	withdraw           schemas.AtmSimulation
+	viewBalance        schemas.AtmSimulation
+	fundTransfer       schemas.AtmSimulation
+	login              schemas.AtmSimulation
+	logout             schemas.AtmSimulation
+	transactionHistory schemas.AtmSimulation
+}
+
+func NewAtmMachineService(d ServiceDatasources) *atmMachineServices {
 	st := new(atmMachineServices)
 
 	st.withdraw = NewWithdraw(d)
@@ -21,6 +27,7 @@ func NewAtmMachineService(d datasource.UserDatasources) *atmMachineServices {
 	st.logout = NewLogout(d)
 	st.viewBalance = NewViewBalance(d)
 	st.fundTransfer = NewFundTransfer(d)
+	st.transactionHistory = NewTransactionHistory(d)
 
 	return st
 }
@@ -43,4 +50,8 @@ func (s atmMachineServices) Login() schemas.AtmSimulation {
 
 func (s atmMachineServices) Logout() schemas.AtmSimulation {
 	return s.logout
+}
+
+func (s atmMachineServices) TransactionHistory() schemas.AtmSimulation {
+	return s.transactionHistory
 }

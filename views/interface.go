@@ -12,4 +12,5 @@ type Views interface {
 	Login() schemas.AtmSimulationView
 	Logout() schemas.AtmSimulationView
 	ReadCsv() schemas.AtmSimulationView
+	TransactionHistory() schemas.AtmSimulationView
 }

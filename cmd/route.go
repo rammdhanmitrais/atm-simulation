@@ -68,5 +68,8 @@ func setAtmMachineConnection(command *schemas.Command) {
 	case utils.ChangeDatasourceCommand:
 		command.Service = csvServices.ReadCsv()
 		command.View = View.ReadCsv()
+	case utils.TransactionHistoryCommand:
+		command.Service = atmMachineService.TransactionHistory()
+		command.View = View.TransactionHistory()
 	}
 }
