@@ -27,6 +27,4 @@ const (
 	LogoutCommand             = 99
 )
 
-const FirstCommand = ChangeDatasourceCommand
-
 var WithdrawValues = [3]int64{10, 50, 100}

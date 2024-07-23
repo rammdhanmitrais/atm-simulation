@@ -8,10 +8,9 @@ import (
 func Process(input *int) (command int, err error) {
 	var cmd = new(schemas.Command)
 
-	defaultCommand := utils.FirstCommand
 	if input == nil {
-		cmd.Command = defaultCommand
-		input = &defaultCommand
+		cmd.Command = utils.ChangeDatasourceCommand
+		input = &cmd.Command
 	} else {
 		cmd.Command = *input
 	}

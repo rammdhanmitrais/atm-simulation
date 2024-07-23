@@ -23,8 +23,6 @@ func (pl *transactionHistory) Execute(cmd *schemas.Command) (err error) {
 	loggedUser, _ := pl.repo.UserDatasource.GetLoggedUser()
 	if loggedUser == nil {
 		err = utils.ErrorInvalidAccount
-
-		cmd.Command = utils.LoginCommand
 		return
 	}
 

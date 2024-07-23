@@ -30,7 +30,7 @@ func Start() {
 		result, err := Process(command)
 		if err != nil {
 			fmt.Println(err.Error())
-			result = utils.FirstCommand
+			result = utils.LoginCommand
 		}
 
 		command = &result
