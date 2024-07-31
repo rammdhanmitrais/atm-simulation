@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/olekukonko/tablewriter"
 )
 
 type transactionHistory struct {
@@ -27,26 +29,19 @@ func (pl *transactionHistory) StartDisplay(cmd *schemas.Command) (err error) {
 func (pl *transactionHistory) EndDisplay(cmd *schemas.Command) (err error) {
 	reader := bufio.NewReaderSize(os.Stdin, 1)
 
-	fmt.Println()
-	fmt.Println("Transactions History")
-	fmt.Println("---------------------------------------------------------------------------------------------------------")
-	fmt.Println("| Transaction Type | Transaction Date | Account Number | From / To | Initial Balance | Amount | Status |")
-	fmt.Println("---------------------------------------------------------------------------------------------------------")
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Transaction Type", "Transaction Date", "Account Number", "From / To", "Initial Balance", "Amount", "Status"})
+
 	for _, data := range datasource.LoggedUser.TransactionHistory {
-		destination := "--------"
-		if data.Type == utils.FundTransfer {
-			destination = data.FromToAccountNumber
+		if data.Type != utils.FundTransfer {
+			data.FromToAccountNumber = "-"
 		}
-		fmt.Printf("| %s | %s | %s | %s | %s | %s | %s |\n", data.Type, data.TransactionDate.Format(utils.LayoutDateTime), data.AccountNumber, destination,
-			fmt.Sprintf("$%d", data.InitialBalance), fmt.Sprintf("$%d", data.Amount), data.CreditOrDebit)
-		fmt.Println()
+
+		row := []string{data.Type, data.TransactionDate.Format(utils.LayoutDateTime), data.AccountNumber, data.FromToAccountNumber, fmt.Sprintf("$%d", data.InitialBalance), fmt.Sprintf("$%d", data.Amount), data.CreditOrDebit}
+		table.Append(row)
 	}
 
-	if len(datasource.LoggedUser.TransactionHistory) == 0 {
-		fmt.Println("-----------------                No Transactions History Found                 --------------------------")
-	}
-
-	fmt.Println("---------------------------------------------------------------------------------------------------------")
+	table.Render()
 
 	fmt.Println("1 Transaction")
 	fmt.Println("2 Exit")

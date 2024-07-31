@@ -21,6 +21,7 @@ var ErrorCommand = errors.New("command invalid")
 var ErrorValuesRecordInvalid = errors.New("record has invalid values")
 var ErrorAccountNumberAlreadyExist = errors.New("account number already exist")
 var ErrorOccurs = errors.New("there are problems happen")
+var ErrorFileEmpty = errors.New("file empty")
 
 func SetErrorInsufficient(curr string, balance int64) error {
 	return fmt.Errorf("insufficient balance %s%d", curr, balance)

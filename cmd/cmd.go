@@ -30,7 +30,10 @@ func Start() {
 		result, err := Process(command)
 		if err != nil {
 			fmt.Println(err.Error())
-			result = utils.LoginCommand
+
+			if result != utils.ChangeDatasourceCommand {
+				result = utils.LoginCommand
+			}
 		}
 
 		command = &result

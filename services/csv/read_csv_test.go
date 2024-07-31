@@ -60,7 +60,7 @@ func Test_readCsv_Execute(t *testing.T) {
 					},
 				},
 			},
-			wantErr: true,
+			wantErr: false,
 		},
 		{
 			name: "Should return error when user choose read csv but path is empty",
@@ -118,6 +118,11 @@ func Test_readCsv_Execute(t *testing.T) {
 			fields: fields{
 				repo: mockDatasource,
 			},
+			mocks: []*gomock.Call{
+				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
+					Times(1).
+					Return(&datasource.User{Id: 1}, nil),
+			},
 			args: args{
 				cmd: &schemas.Command{
 					Arguments: schemas.Arguments{
@@ -131,39 +136,17 @@ func Test_readCsv_Execute(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Should return error when fail to get user account number",
-			fields: fields{
-				repo: mockDatasource,
-			},
-			mocks: []*gomock.Call{
-				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
-					Times(1).
-					Return(&datasource.User{}, nil),
-			},
-			args: args{
-				cmd: &schemas.Command{
-					Arguments: schemas.Arguments{
-						CsvArg: schemas.CsvArguments{
-							Chosen: 2,
-							Path:   "../../utils/test_file/datasource.csv",
-						},
-					},
-				},
-			},
-			wantErr: true,
-		},
-		{
 			name: "Should return error when fail to insert user to datasource",
 			fields: fields{
 				repo: mockDatasource,
 			},
 			mocks: []*gomock.Call{
 				mockDatasource.EXPECT().GetUserByAccountNumber(gomock.Any()).
-					Times(1).
+					Times(3).
 					Return(nil, nil),
 
 				mockDatasource.EXPECT().InsertUser(gomock.Any()).
-					Times(1).
+					Times(3).
 					Return(utils.ErrorOccurs),
 			},
 			args: args{

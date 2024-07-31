@@ -34,6 +34,7 @@ func Process(input *int) (command int, err error) {
 		// execute the service
 		err = cmd.Service.Execute(cmd)
 		if err != nil {
+			command = cmd.Command
 			return
 		}
 	}

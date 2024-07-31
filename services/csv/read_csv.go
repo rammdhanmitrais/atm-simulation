@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type readCsv struct {
@@ -26,7 +27,7 @@ func (pl *readCsv) Execute(cmd *schemas.Command) (err error) {
 		err = pl.readCsv(cmd)
 
 		if err == nil {
-			fmt.Println("generate csv datasource successfully")
+			fmt.Println("import datasource from csv is successfully")
 		}
 
 		return
@@ -35,8 +36,9 @@ func (pl *readCsv) Execute(cmd *schemas.Command) (err error) {
 	if cmd.Arguments.CsvArg.Chosen == 1 {
 		pl.repo.InitiateDefaultUser()
 
-		fmt.Println("generate default datasource successfully")
+		fmt.Println("import default datasource successfully")
 
+		return
 	}
 
 	err = utils.ErrorCommand
@@ -63,57 +65,68 @@ func (pl *readCsv) readCsv(cmd *schemas.Command) (err error) {
 		return
 	}
 
-	accountNumberRead := make(map[string]bool)
-	readyRecord := []datasource.User{}
-
-	// validate the records
-	for _, eachrecord := range records {
-		if eachrecord[0] == "" || len(eachrecord) < 1 {
-			err = utils.ErrorValuesRecordInvalid
-			return
-		}
-
-		record := strings.Split(eachrecord[0], ";")
-		if len(record) != 4 {
-			err = utils.ErrorValuesRecordInvalid
-			return
-		}
-
-		// check account number duplicate or no
-		if accountNumberRead[record[3]] {
-			err = utils.SetErrorDuplicateAccountNumber(record[3])
-			return
-		}
-
-		balance, _ := strconv.Atoi(record[2])
-		user := datasource.User{
-			Id:            -1,
-			Name:          record[0],
-			Pin:           record[1],
-			Balance:       int64(balance),
-			AccountNumber: record[3],
-		}
-
-		accountNumberRead[record[3]] = true
-		readyRecord = append(readyRecord, user)
+	if len(records) < 2 {
+		err = utils.ErrorFileEmpty
+		return
 	}
 
-	// validate record to datasource
-	for _, user := range readyRecord {
-		// check user to datasource
-		existingUser, _ := pl.repo.GetUserByAccountNumber(user.AccountNumber)
-		if existingUser != nil {
-			err = utils.ErrorAccountNumberAlreadyExist
-			return
-		}
+	// validate the records
+	var wg sync.WaitGroup
+	errorCh := make(chan error)
+	for _, record := range records[1:] {
+		wg.Add(1)
+		go pl.processRecord(&wg, record, errorCh)
+	}
 
-		// insert to datasource
-		err = pl.repo.InsertUser(user)
-		if err != nil {
-			err = utils.ErrorOccurs
-			return
+	go func() {
+		wg.Wait()
+		close(errorCh)
+	}()
+
+	for e := range errorCh {
+		if e != nil {
+			err = e
+			break
 		}
 	}
 
 	return
+}
+
+func (pl *readCsv) processRecord(wg *sync.WaitGroup, record []string, err chan error) {
+	defer wg.Done()
+
+	if record[0] == "" || len(record) < 1 {
+		err <- utils.ErrorFileEmpty
+		return
+	}
+
+	data := strings.Split(record[0], ";")
+	if len(data) != 4 {
+		err <- utils.ErrorValuesRecordInvalid
+		return
+	}
+
+	balance, _ := strconv.Atoi(data[2])
+	user := datasource.User{
+		Id:            -1,
+		Name:          data[0],
+		Pin:           data[1],
+		Balance:       int64(balance),
+		AccountNumber: data[3],
+	}
+
+	// check user to datasource
+	existingUser, _ := pl.repo.GetUserByAccountNumber(user.AccountNumber)
+	if existingUser != nil {
+		err <- utils.ErrorAccountNumberAlreadyExist
+		return
+	}
+
+	// insert to datasource
+	errInsert := pl.repo.InsertUser(user)
+	if errInsert != nil {
+		err <- utils.ErrorOccurs
+		return
+	}
 }
