@@ -18,12 +18,21 @@ A program which simulate the functionalities of ATM
 
      Account Number: 112244
 
+- This program includes:
+  --
+   - Login using Account Number and PIN
+   - Withdraw the Balance
+   - View Account Balance
+   - Transfer to Other Account Number
+
+===========
+
 # ATM System CLI
 ATM System CLI is a tool for simulating an interaction of an ATM with a retail bank from the terminal.
 
 ## Pre-requisite
-- installed <a href="https://nodejs.org/en/download/package-manager">node js</a>
-- installed <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm">npm</a>
+- installed <a href="https://nodejs.org/en/download/package-manager" target="_blank">node js</a>
+- installed <a href="https://docs.npmjs.com/downloading-and-installing-node-js-and-npm" target="_blank">npm</a>
 
 ## Installation
 
@@ -89,10 +98,3 @@ To check the unit test, run:
 ```bash
 npm test
 ```
-
-- This program includes:
-  --
-   - Login using Account Number and PIN
-   - Withdraw the Balance
-   - View Account Balance
-   - Transfer to Other Account Number
